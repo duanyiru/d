@@ -1,0 +1,37 @@
+usertype Text;
+usertype sekey;
+hashfunction H,S;
+protocol ZHUCE(C,B)
+{
+	role C
+	{
+		fresh IDA,N1,HPIN,PKA: Nonce;
+		var KAB:sekey;
+		var Y:Text;
+		match(Y,(IDA,PKA,N1,HPIN));
+		send_1(C,B,{C,Y,{S(Y)}sk(C)}pk(B));
+		recv_2(B,C, {B,KAB,{S(KAB)}sk(B)}pk(C) );
+		claim(C,Running,B,KAB,Y);
+		claim_i1(C,Secret,KAB);
+		claim_i2(C,Alive);
+		claim_i3(C,Weakagree);
+		claim_i4(C,Niagree);
+		claim_i5(C,Nisynch);
+		claim_i6(C,Commit,B,Y);
+	}
+	role B
+	{
+		var IDA,PKA,N1,HPIN: Nonce;
+		var Y:Text;
+		fresh KAB: sekey;
+		recv_1(C,B,{C,Y,{S(Y)}sk(C)}pk(B));
+		send_2(B,C,{B,KAB,{S(KAB)}sk(B)}pk(C));
+		claim(B,Running,C,KAB,Y);
+		claim_i1(B,Secret,Y);
+		claim_i2(B,Alive);
+		claim_i3(B,Weakagree);
+		claim_i4(B,Niagree);
+		claim_i5(B,Nisynch);
+		claim_i6(B,Commit,C,KAB);
+	}
+}
