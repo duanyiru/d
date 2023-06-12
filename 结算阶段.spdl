@@ -1,0 +1,60 @@
+usertype Text;
+protocol JIESUAN(C,B,POS)
+{
+	role C
+	{
+		fresh AMT2,LOCC,TC: Nonce;
+		var MS,R:Text;
+		var IDPOS,AMT1,TID,TPOS,N2,AMT:Nonce;
+		recv_1(POS,C,IDPOS,AMT1,TID,TPOS,N2);
+		send_2(C,POS,{IDPOS,TID,AMT2,N2,TC,LOCC}k(C,POS),N2,AMT2,TID);				
+		recv_5(POS,C,{TID,N2,AMT}k(C,B));
+		match(MS,(IDPOS,TID,AMT2,N2,TC,LOCC));
+		claim(C,Running,B,TID);
+		claim_i1(C,Secret,MS);
+		claim_i2(C,Alive);
+		claim_i3(C,Weakagree);
+		claim_i4(C,Niagree);
+		claim_i5(C,Nisynch);
+		claim_i6(C,Commit,POS,MS);
+	}
+	role B
+	{
+		fresh Succ,Fail,AMT:Nonce;
+		var LOCPOS,TPOS,N2,IDPOS,TID,AMT2,TC,LOCC,TID:Nonce;
+		var MS,M2:Text;	
+		recv_3(POS,B,{LOCPOS,TPOS,N2,{IDPOS,TID,AMT2,N2,TC,LOCC}k(C,POS),N2,AMT2,TID}k(POS,B));
+		send_4(B,POS,{TID,N2,AMT,{TID,N2,AMT}k(C,B)}k(POS,B));
+		match(MS,(IDPOS,TID,AMT2,N2,TC,LOCC));
+		match(M2,({MS}k(C,POS),N2,AMT2,TID));
+		claim(B,Running,POS,AMT);
+		claim_i1(B,Secret,M2);
+		claim_i2(B,Alive);
+		claim_i3(B,Weakagree);
+		claim_i4(B,Niagree);
+		claim_i5(B,Nisynch);
+		claim_i6(B,Commit,POS,AMT);
+	}
+	role POS
+	{
+		fresh IDPOS,AMT1,TID,TPOS,N2,LOCPOS,TPOS:Nonce;
+		send_1(POS,C,IDPOS,AMT1,TID,TPOS,N2);
+		var AMT2,TC,LOCC,AMT:Nonce;	
+		recv_2(C,POS,{IDPOS,TID,AMT2,N2,TC,LOCC}k(C,POS),N2,AMT2,TID);
+		send_3(POS,B,{LOCPOS,TPOS,N2,{IDPOS,TID,AMT2,N2,TC,LOCC}k(C,POS),N2,AMT2,TID}k(POS,B));
+		recv_4(B,POS,{TID,N2,AMT,{TID,N2,AMT}k(C,B)}k(POS,B));
+		send_5(POS,C,{TID,N2,AMT}k(C,B));	
+		var MS:Text;
+		match(MS,(AMT,TID));
+		claim(POS,Running,C,AMT);
+		claim_i1(POS,Secret,MS);
+		claim_i2(POS,Alive);
+		claim_i3(POS,Weakagree);
+		claim_i4(POS,Niagree);
+		claim_i5(POS,Nisynch);
+		claim_i6(POS,Commit,C,AMT);
+	}
+}
+
+
+
